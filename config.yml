@@ -1,0 +1,5 @@
+parser: whisperapi
+mods_dir: modules
+verbose_tts: true
+middleware:
+    - test
