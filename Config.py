@@ -27,6 +27,11 @@ class Config:
                     self.middleware_tts_order.append(self.middleware_tts[mod])
                 if mod in self.middleware_sst:
                     self.middleware_sst_order.append(self.middleware_sst[mod])
+        root_dir = os.getcwd()
+        for currdir, fxn in self.init_fxns.items():
+            os.chdir(f'{root_dir}\\{currdir}')
+            fxn()
+        os.chdir(root_dir)
 
     def getMods(self, mods_dir):
         if mods_dir is None:
@@ -39,6 +44,7 @@ class Config:
         self.module_names = []
         self.middleware_tts = {}
         self.middleware_sst = {}
+        self.init_fxns = {}
         for i, (root, dirs, files) in enumerate(os.walk(mods_dir)):
             if root == mods_dir:
                 self.module_names.extend(dirs)
@@ -69,10 +75,14 @@ class Config:
                     if mod == '@sst':
                         self.middleware_sst[root.split('\\')[1]] = fxn
                         continue
+                    if mod == '@init':
+                        self.init_fxns[root] = fxn
+                        continue
                     if modName is None:
                         self.loaderror = f'Missing \'command\' in command {mod}'
                         return
-                    self.mods.append({'command': modName, 'function': fxn})
+                    self.mods.append(
+                        {'command': modName, 'function': fxn, 'directory': root})
                 except Exception as e:
                     if filename is None or fxn_name is None:
                         self.loaderror = f'Missing one or more of: impl_file, impl_fn in command {mod}'

@@ -1,12 +1,12 @@
+import os
 import speech_recognition as sr
-import threading
-import string
+from string import punctuation
 from txtai.pipeline import TextToSpeech
 import sounddevice as sd
 import re
 
 from Config import Config
-from util import Functions, Arguments, dotdict
+from util import Functions, Arguments
 
 
 class CommandHandler:
@@ -34,7 +34,8 @@ class CommandHandler:
                 for middleware in self.config.middleware_sst_order:
                     command = middleware(command)
             self.manage(command)
-        except:
+        except Exception as e:
+            print(e)
             return
 
     def get_transcript(self, recog: sr.Recognizer, audio, clean=False):
@@ -51,8 +52,8 @@ class CommandHandler:
         except sr.RequestError as e:
             raise Exception(f"Bad request ({self.recognizer} - {e})")
 
-    def clean(self, input):
-        return "".join(input.translate(str.maketrans('', '', string.punctuation))).lower().strip()
+    def clean(self, input: str):
+        return input.lower().strip(punctuation).strip()
 
     def say(self, script):
         if len(self.config.middleware_tts_order):
@@ -74,26 +75,32 @@ class CommandHandler:
     def manage(self, command):
         print(command)
         for cmd in self.config.mods:
-            params = re.search('\{(.+)\}', cmd['command'])
+            params = re.findall('\{(.+?)\}', cmd['command'])
             if not params and command == cmd['command']:
+                root_dir = os.getcwd()
+                os.chdir(f"{root_dir}\\{cmd['directory']}")
                 cmd['function']({}, Functions(
                     say=self.say,
                     exit=self.exit,
                     prompt=self.prompt
                 ))
+                os.chdir(root_dir)
                 return
             if not params:
                 continue
-            matchStr = re.sub('{.*}', '(.*)', cmd['command'])
+            matchStr = re.sub('{.+?}', '(.+)', cmd['command'])
             args = re.match(matchStr, command)
             if args:
+                root_dir = os.getcwd()
+                os.chdir(f"{root_dir}\\{cmd['directory']}")
                 cmd['function'](
                     Arguments(
-                        {param: args.groups()[i] for i, param in enumerate(params.groups())}),
+                        {param: args.groups()[i] for i, param in enumerate(params)}),
                     Functions(
                         say=self.say,
                         exit=self.exit,
                         prompt=self.prompt
                     )
                 )
+                os.chdir(root_dir)
                 return
