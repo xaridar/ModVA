@@ -99,7 +99,7 @@ Once you have created modules, or just to run ModVA as it is, [Python](https://w
 To install all required modules:
 
 ```
-> pip install txtai[pipeline] SpeechRecognition sounddevice configparser importlib dotenv typing word2number
+> pip install txtai[pipeline] SpeechRecognition sounddevice configparser importlib python-dotenv typing word2number
 ```
 
 Finally, to run ModVA, use the command
