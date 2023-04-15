@@ -67,6 +67,8 @@ class Config:
                     modName = cf[mod]['command'] if 'command' in cf[mod] else None
                     filename = cf[mod]['impl_file']
                     fxn_name = cf[mod]['impl_fn']
+                    aliases = [x.strip(' "') for x in cf[mod]['alt_cmds'].split(
+                        ',')] if 'alt_cmds' in cf[mod] else []
                     module = il.import_module(os.path.join(
                         root, f'{filename}').replace('\\', '.'))
                     fxn = getattr(module, fxn_name)
@@ -84,6 +86,9 @@ class Config:
                         return
                     self.mods.append(
                         {'command': modName, 'function': fxn, 'directory': root})
+                    for alias in aliases:
+                        self.mods.append(
+                            {'command': alias, 'function': fxn, 'directory': root})
                 except Exception as e:
                     if filename is None or fxn_name is None:
                         self.loaderror = f'Missing one or more of: impl_file, impl_fn in command {mod}'
