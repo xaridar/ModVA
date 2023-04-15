@@ -1,4 +1,5 @@
 import webbrowser as wb
+import AppOpener as ao
 from util import Arguments, Functions
 import json
 
@@ -39,3 +40,11 @@ def del_alias(args: Arguments, funcs: Functions):
         with open('aliases.json', 'w') as f:
             f.write(json.dumps(aliases, indent=4))
         funcs.say('Removed!')
+
+
+def open_app(args: Arguments, funcs: Functions):
+    ao.open(args.app, output=False, match_closest=True)
+
+
+def close_app(args: Arguments, funcs: Functions):
+    ao.close(args.app, output=False, match_closest=True)

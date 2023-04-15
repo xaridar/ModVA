@@ -8,10 +8,11 @@ class Config:
         self.parser = yaml['parser'] if 'parser' in yaml else None
         modules_dir = yaml['mods_dir'] if 'mods_dir' in yaml else None
         self.verbose_tts = yaml['verbose_tts'] if 'verbose_tts' in yaml else False
+        self.verbose_stt = yaml['verbose_stt'] if 'verbose_stt' in yaml else False
         self.loaderror = None
         self.getMods(modules_dir)
         self.middleware_tts_order = []
-        self.middleware_sst_order = []
+        self.middleware_stt_order = []
         if self.loaderror is not None:
             return
         if 'middleware' in yaml:
@@ -20,13 +21,13 @@ class Config:
                 if not mod in self.module_names:
                     self.loaderror = f"Module '{mod}' listed in middleware, but no module called '{mod}' is located in the {modules_dir} directory."
                     return
-                if not mod in self.middleware_sst and not mod in self.middleware_tts:
-                    self.loaderror = f"Module '{mod}' has no middleware functions defined using '@sst' or '@tts'."
+                if not mod in self.middleware_stt and not mod in self.middleware_tts:
+                    self.loaderror = f"Module '{mod}' has no middleware functions defined using '@stt' or '@tts'."
                     return
                 if mod in self.middleware_tts:
                     self.middleware_tts_order.append(self.middleware_tts[mod])
-                if mod in self.middleware_sst:
-                    self.middleware_sst_order.append(self.middleware_sst[mod])
+                if mod in self.middleware_stt:
+                    self.middleware_stt_order.append(self.middleware_stt[mod])
         root_dir = os.getcwd()
         for currdir, fxn in self.init_fxns.items():
             os.chdir(f'{root_dir}\\{currdir}')
@@ -43,7 +44,7 @@ class Config:
         self.mods = []
         self.module_names = []
         self.middleware_tts = {}
-        self.middleware_sst = {}
+        self.middleware_stt = {}
         self.init_fxns = {}
         for i, (root, dirs, files) in enumerate(os.walk(mods_dir)):
             if root == mods_dir:
@@ -72,8 +73,8 @@ class Config:
                     if mod == '@tts':
                         self.middleware_tts[root.split('\\')[1]] = fxn
                         continue
-                    if mod == '@sst':
-                        self.middleware_sst[root.split('\\')[1]] = fxn
+                    if mod == '@stt':
+                        self.middleware_stt[root.split('\\')[1]] = fxn
                         continue
                     if mod == '@init':
                         self.init_fxns[root] = fxn

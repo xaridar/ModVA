@@ -30,8 +30,8 @@ class CommandHandler:
             command = self.get_transcript(recog, audio, clean=True)
             if command is None:
                 return
-            if len(self.config.middleware_sst_order):
-                for middleware in self.config.middleware_sst_order:
+            if len(self.config.middleware_stt_order):
+                for middleware in self.config.middleware_stt_order:
                     command = middleware(command)
             self.manage(command)
         except Exception as e:
@@ -73,7 +73,8 @@ class CommandHandler:
         self.finished = True
 
     def manage(self, command):
-        print(command)
+        if self.config.verbose_stt:
+            print(command)
         for cmd in self.config.mods:
             params = re.findall('\{(.+?)\}', cmd['command'])
             if not params and command == cmd['command']:
