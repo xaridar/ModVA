@@ -29,7 +29,7 @@ In `config.yml`, several variables can be edited to change the behavior of ModVA
 
 -   ### **middleware**
 
-    `middleware` accepts an ordered list of module names, and specifies the order for [middleware](#defining-middleware) to be executed, both tts middleware and sst middleware. Any modules not listed in this variable that include middleware will stillwork, but the middleware will not execute.
+    `middleware` accepts an ordered list of module names, and specifies the order for [middleware](#defining-middleware) to be executed, both tts middleware and sst middleware. Any modules not listed in this variable that include middleware will still work, but the middleware will not execute.
 
 ## Modules
 
